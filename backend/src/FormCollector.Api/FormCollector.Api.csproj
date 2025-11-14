@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" />
+		<PackageReference Include="MinimalApi.Endpoint" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Submissions\Find\" />
+	  <Folder Include="Submissions\GetById\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\FormCollector.Application\FormCollector.Application.csproj" />
+	  <ProjectReference Include="..\FormCollector.Infrastructure\FormCollector.Infrastructure.csproj" />
+	</ItemGroup>
+</Project>
