@@ -11,7 +11,7 @@ internal sealed class SubmissionRepository(DbContext dbContext)
     public async Task<Submission?> FindAsync(SubmissionId id, CancellationToken ct = default)
     {
         return await dbContext.Set<Submission>()
-            .SingleOrDefaultAsync(s => s.Id.Key == id.Key, ct)
+            .SingleOrDefaultAsync(s => s.Id == id, ct)
             .ConfigureAwait(false);
     }
 
@@ -19,7 +19,7 @@ internal sealed class SubmissionRepository(DbContext dbContext)
         int page,
         int pageSize,
         List<string> terms,
-        FormData? formData,
+        FormId? formId,
         CancellationToken ct = default)
     {
         if (page <= 0) page = 1;
@@ -27,11 +27,9 @@ internal sealed class SubmissionRepository(DbContext dbContext)
 
         var query = dbContext.Set<Submission>().AsQueryable();
 
-        if (formData is not null)
+        if (formId is not null)
         {
-            query = query.Where(s =>
-                s.FormData.Id.Value == formData.Id.Value &&
-                s.FormData.Name == formData.Name);
+            query = query.Where(s => s.FormData.Id == formId);
         }
 
         foreach (var term in terms)

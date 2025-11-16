@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+        services.AddScoped<IDatabaseInitializer, DatabaseInitializer>();
 
         return services;
     }

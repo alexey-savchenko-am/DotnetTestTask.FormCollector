@@ -6,6 +6,6 @@ namespace FormCollector.Application.Abstract;
 
 public interface ISubmissionReader
 {
-    Task<SubmissionSearchResultDto> SearchAsync(SubmissionSearchDto searchDto, CancellationToken ct);
-    Task<Submission?> SearchByIdAsync(Guid id, CancellationToken ct);
+    Task<SubmissionSearchResultDto> SearchAsync(SubmissionSearchDto searchDto, CancellationToken ct = default);
+    Task<SubmissionDto?> SearchByIdAsync(Guid id, CancellationToken ct = default);
 }

@@ -2,7 +2,6 @@
 
 public record SubmissionSearchDto(
     string? FormId,
-    string? FormName,
-    string? KeywordsString,
+    string? Query,
     int Page,
     int ItemsPerPage = 10);

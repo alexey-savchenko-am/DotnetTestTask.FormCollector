@@ -20,7 +20,7 @@ internal class SubmissionService
         _submissionRepository = submissionRepository;
     }
 
-    public async Task<Submission> CreateAsync(SubmissionCreateDto submissionDto, CancellationToken ct)
+    public async Task<SubmissionDto> CreateAsync(SubmissionCreateDto submissionDto, CancellationToken ct)
     {
         Submission submission = null;
         try
@@ -42,7 +42,7 @@ internal class SubmissionService
                 submission.Id,
                 formData.Id);
 
-            return submission;
+            return ToDto(submission);
         }
         catch (ArgumentException ex)
         {
@@ -73,7 +73,7 @@ internal class SubmissionService
         }
     }
 
-    public async Task<Submission?> SearchByIdAsync(
+    public async Task<SubmissionDto?> SearchByIdAsync(
         Guid id,
         CancellationToken ct)
     {
@@ -93,7 +93,7 @@ internal class SubmissionService
                 _logger.LogInformation("Submission retrieved successfully. ID: {Id}", id);
             }
 
-            return submission;
+            return submission is null ? null : ToDto(submission);
         }
         catch (ArgumentException ex)
         {
@@ -123,16 +123,16 @@ internal class SubmissionService
 
     public async Task<SubmissionSearchResultDto> SearchAsync(SubmissionSearchDto searchDto, CancellationToken ct)
     {
-        FormData? formData = null;
+        FormId? formId = null;
 
         try
         {
-            var terms = searchDto.KeywordsString?
+            var terms = searchDto.Query?
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             if (searchDto.FormId is not null)
             {
-                formData = new FormData(new FormId(searchDto.FormId), searchDto.FormName!);
+                formId = new FormId(searchDto.FormId);
             }
 
             var submissions = await _submissionRepository
@@ -140,54 +140,60 @@ internal class SubmissionService
                     searchDto.Page,
                     searchDto.ItemsPerPage,
                     terms?.ToList() ?? [],
-                    formData,
+                    formId,
                     ct)
                 .ConfigureAwait(false);
 
             if (submissions.TotalCount == 0)
             {
                 _logger.LogWarning(
-                    "Submissions not found. FormId: {FormId}, FormName: {FormName}",
-                    formData?.Id.Value,
-                    formData?.Name);
+                    "Submissions not found. FormId: {FormId}",
+                    formId?.Value);
             }
             else
             {
                 _logger.LogInformation(
-                    "Submissions retrieved successfully. TotalCount: {SubmissionCount}, FormId: {FormId}, FormName: {FormName}",
+                    "Submissions retrieved successfully. TotalCount: {SubmissionCount}, FormId: {FormId}",
                     submissions.TotalCount,
-                    formData?.Id.Value,
-                    formData?.Name);
+                    formId?.Value);
             }
 
-            return new SubmissionSearchResultDto(submissions.Items, submissions.TotalCount);
+            var submissionDtos = submissions.Items
+                .Select(ToDto)
+                .ToList();
+
+            return new SubmissionSearchResultDto(submissionDtos, submissions.TotalCount);
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(
                 ex,
-                "Invalid argument while retrieving submissions. FormId: {FormId}, FormName: {FormName}",
-                formData?.Id.Value,
-                formData?.Name);
+                "Invalid argument while retrieving submissions. FormId: {FormId}",
+                formId?.Value);
             throw;
         }
         catch (DbException ex)
         {
             _logger.LogError(
                 ex,
-                "Database error while retrieving submissions. FormId: {FormId}, FormName: {FormName}",
-                formData?.Id.Value,
-                formData?.Name);
+                "Database error while retrieving submissions. FormId: {FormId}",
+                formId?.Value);
             throw;
         }
         catch (Exception ex)
         {
             _logger.LogError(
                 ex,
-                "Unexpected error while retrieving submissions. FormId: {FormId}, FormName: {FormName}",
-                formData?.Id.Value,
-                formData?.Name);
+                "Unexpected error while retrieving submissions. FormId: {FormId}",
+                formId?.Value);
             throw;
         }
     }
+
+    private static SubmissionDto ToDto(Submission submission) => new (
+            submission.Id.Key,
+            submission.FormData.Id.Value,
+            submission.FormData.Name,
+            submission.Payload.Json.RootElement.GetRawText(),
+            submission.CreatedOnUtc);
 }

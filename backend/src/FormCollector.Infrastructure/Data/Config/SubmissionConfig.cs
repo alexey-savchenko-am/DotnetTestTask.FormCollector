@@ -14,7 +14,7 @@ internal sealed class SubmissionConfig
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id)
             .HasColumnName("id")
-            .HasConversion(submissionId => submissionId.Id, key => new SubmissionId(key))
+            .HasConversion(submissionId => submissionId.Key, key => new SubmissionId(key))
             .ValueGeneratedNever()
             .IsRequired();
 
@@ -44,7 +44,6 @@ internal sealed class SubmissionConfig
                 )
                 .IsRequired();
         });
-
 
         builder.Property(s => s.CreatedOnUtc)
             .HasColumnName("created_on_utc")

@@ -2,4 +2,4 @@
 
 namespace FormCollector.Application.Submissions;
 
-public sealed record SubmissionSearchResultDto(List<Submission> Submissions, int TotalCount);
+public sealed record SubmissionSearchResultDto(List<SubmissionDto> Submissions, int TotalCount);

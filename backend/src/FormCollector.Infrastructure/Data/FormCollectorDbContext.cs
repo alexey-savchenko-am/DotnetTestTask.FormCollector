@@ -8,6 +8,10 @@ internal sealed class FormCollectorDbContext
 {
     public DbSet<Submission> Sumbissions { get; set; }
 
+    public FormCollectorDbContext(DbContextOptions<FormCollectorDbContext> options)
+        : base(options)
+    {}
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

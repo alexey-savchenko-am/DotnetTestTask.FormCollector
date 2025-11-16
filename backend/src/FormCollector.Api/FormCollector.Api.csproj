@@ -1,15 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<UserSecretsId>e55fc39f-0347-4303-b9d5-601d686f0d7d</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..</DockerfileContext>
+		<DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="MinimalApi.Endpoint" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Submissions\Find\" />
-	  <Folder Include="Submissions\GetById\" />
+		<ProjectReference Include="..\FormCollector.Application\FormCollector.Application.csproj" />
+		<ProjectReference Include="..\FormCollector.Infrastructure\FormCollector.Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\FormCollector.Application\FormCollector.Application.csproj" />
-	  <ProjectReference Include="..\FormCollector.Infrastructure\FormCollector.Infrastructure.csproj" />
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>

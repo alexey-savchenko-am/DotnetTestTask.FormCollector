@@ -3,7 +3,7 @@ using FormCollector.Application.Submissions;
 using FormCollector.Domain;
 using MinimalApi.Endpoint;
 
-namespace FormCollector.Api.Submissions.Create;
+namespace FormCollector.Api.Submissions;
 
 public class CreateSubmission(ISubmissionWriter submissionWriter)
     : IEndpoint<IResult, SubmissionCreateDto>
@@ -13,18 +13,20 @@ public class CreateSubmission(ISubmissionWriter submissionWriter)
         app.MapPost("/api/submissions", this.HandleAsync)
            .Produces<Submission>(StatusCodes.Status201Created)
            .Produces(StatusCodes.Status400BadRequest)
-           .WithName("CreateSubmission");
+           .WithName("CreateSubmission")
+           .WithTags("Submission Enpoints");
     }
 
     public async Task<IResult> HandleAsync(SubmissionCreateDto request)
     {
+
         if (request is null)
             return Results.BadRequest("SubmissionDto cannot be null.");
 
         try
         {
             var submission = await submissionWriter
-                .CreateAsync(request, CancellationToken.None)
+                .CreateAsync(request)
                 .ConfigureAwait(false);
 
             return Results.Created($"/api/submissions/{submission.Id}", submission);
