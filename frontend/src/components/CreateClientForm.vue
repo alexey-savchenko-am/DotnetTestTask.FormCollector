@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { SubmissionApi } from '@/api/mock-submission-api';
+import { submissionApi } from '@/api';
+import FormInput from './FormInput.vue';
+import FormRadioGroup from './FormRadioGroup.vue';
 
 interface ClientForm {
     firstName: string
@@ -26,28 +28,28 @@ const errors = reactive<Record<string, string>>({})
 const status = ref('')
 
 function validateForm(): boolean {
-    errors.firstName = form.firstName ? '' : 'Enter first name'
-    errors.lastName = form.lastName ? '' : 'Enter last name'
+    errors.firstName = form.firstName ? '' : 'Field first name is required'
+    errors.lastName = form.lastName ? '' : 'Field last name is required'
     errors.birthDate = form.birthDate ? '' : 'Choose birth date'
     errors.gender = form.gender ? '' : 'Choose gender'
     errors.email = /\S+@\S+\.\S+/.test(form.email) ? '' : 'Enter correct email'
     errors.phone = form.phone.length >= 6 ? '' : 'Enter correct phone'
-    errors.address = form.address ? '' : 'Enter address'
+    errors.address = form.address ? '' : 'Field address is required'
 
     return Object.values(errors).every(e => !e)
 }
 
 async function submitForm() {
+
     if (!validateForm()) {
-        console.error("form is not valid", );
+        console.error("Client form is not valid. Please fill all required fields.", );
         return;
     }
     
     try {
-        const result = await SubmissionApi.createClient({...form});
+        const result = await submissionApi.createSubmission("client-form", "Create New Client", {...form});
         console.log('New client successfully created:', result);
         status.value = 'New client successfully created!';
-        // clean up form
         resetForm();
     } catch(error: any) {
         console.error(error);
@@ -67,83 +69,53 @@ function resetForm() {
 </script>
 
 <template>
-    <form @submit.prevent="submitForm" class="form">
-        <label>
-            First Name:
-            <input v-model="form.firstName" type="text" required/>
-            <span class="error">{{ errors.firstName }}</span>
-        </label>
+    <form @submit.prevent="submitForm" class="flex flex-col gap-2 px-2 w-full lg:w-[600px]">
+        
+        <FormInput label="First Name" v-model="form.firstName" :error="errors.firstName" />
 
-        <label>
-            Last Name:
-            <input v-model="form.lastName" type="text" required/>
-            <span class="error">{{ errors.lastName }}</span>
-        </label>
+        <FormInput label="Last Name" v-model="form.lastName" :error="errors.lastName" />
 
-        <label>
-            Birth Date:
-            <input v-model="form.birthDate" type="date" required/>
-            <span class="error">{{ errors.birthDate }}</span>
-        </label>
+        <FormInput label="Birth Date" v-model="form.birthDate" :error="errors.birthDate" type="date"/>
 
-        <fieldset>
-            <legend>Gender</legend>
-            <label>
-                <input type="radio" value="male" v-model="form.gender" />
-                Male
-            </label>
-            <label>
-                <input type="radio" value="female" v-model="form.gender" />
-                Female
-            </label>
-            <label>
-                <input type="radio" value="other" v-model="form.gender" />
-                Other
-            </label>
-            <span class="error">{{ errors.gender }}</span>
-        </fieldset>
+        <FormRadioGroup
+            label="Gender"
+            v-model="form.gender"
+            :options="[
+                { label: 'Male', value: 'male' },
+                { label: 'Female', value: 'female' },
+                { label: 'Other', value: 'other' }
+            ]"
+            :error="errors.gender"
+        />
+        
+        <FormInput label="Address" v-model="form.address" :error="errors.address" />
 
-        <label>
-            Address:
-            <input v-model="form.address" type="text" />
-            <span class="error">{{ errors.address }}</span>
-        </label>
+        <FormInput label="Email" v-model="form.email" :error="errors.email" type="email" />
 
-        <label>
-            Email:
-            <input v-model="form.email" type="email" />
-            <span class="error">{{ errors.email }}</span>
-        </label>
+        <FormInput label="Phone Number" v-model="form.phone" :error="errors.phone" />
 
-        <label>
-            Phone number:
-            <input v-model="form.phone" type="text" />
-            <span class="error">{{ errors.phone }}</span>
-        </label>
+        <button
+            type="submit"
+            class="
+                w-full
+                rounded-lg
+                border-2 border-blue-300
+                py-2 text-lg
+                cursor-pointer
+                transition-all
+                transform
+                active:scale-98
+                active:border-blue-300
+                hover:border-blue-300
+                focus:outline-none
+                focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50
+            "
+        >
+            Create Client
+        </button>
 
-        <button type="submit">Create client</button>
-        <div v-if="status" class="status">{{ status }}</div>
+
+        <div v-if="status" class="text-green-500">{{ status }}</div>
     </form>
 </template>
 
-
-<style scoped>
-.form {
-  max-width: 450px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-fieldset {
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-.error {
-  color: red;
-  font-size: 0.9em;
-}
-.status {
-  margin-top: 10px;
-  color: green;
-}
-</style>

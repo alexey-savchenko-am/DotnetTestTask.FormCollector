@@ -3,14 +3,8 @@ import CreateClientForm from '@/components/CreateClientForm.vue';
 </script>
 
 <template>
-    <div class="page">
-      <h1>Create new client</h1>
+    <div class="flex flex-col items-center py-4">
+      <h1 class="text-3xl text-gray-600">Create New Client</h1>
       <CreateClientForm />
     </div>
 </template>
-
-<style scoped>
-.page {
-  padding: 24px;
-}
-</style>
