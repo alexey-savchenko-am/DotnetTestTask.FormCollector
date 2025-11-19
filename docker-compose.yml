@@ -1,46 +1,49 @@
-version: "3.9"
-
 services:
-    formcollector.db:
-        container_name: formcollector.db
-        image: postgres:16
-        restart: always
-        environment:
-            POSTGRES_DB: FormCollector
-            POSTGRES_USER: admin
-            POSTGRES_PASSWORD: aDmIn44*
-        ports:
-            - "5432:5432"
-        volumes:
-            - formcollector_pgdata:/var/lib/postgresql/data
-        networks:
-            - appnet
-    formcollector.api:
-        container_name: formcollector.api
-        build:
-            context: ./backend
-            dockerfile: src/FormCollector.Api/Dockerfile
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-        ports:
-            - "8080:8080"
-        depends_on:
-            - formcollector.db
-        networks:
-            - appnet
-    formcollector.web:
-        container_name: formcollector.web
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile
-        ports:
-            - "3000:80"
-        depends_on:
-            - formcollector.api
-        networks:
-            - appnet
+  formcollector.db:
+    container_name: formcollector.db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: FormCollector
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: aDmIn44*
+    ports:
+      - "5432:5432"
+    volumes:
+      - formcollector_pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  formcollector.api:
+    container_name: formcollector.api
+    build:
+      context: ./backend
+      dockerfile: src/FormCollector.Api/Dockerfile
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8080:8080"
+    depends_on:
+      - formcollector.db
+    networks:
+      - appnet
+
+  formcollector.web:
+    container_name: formcollector.web
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "3000:80"
+    depends_on:
+      - formcollector.api
+    networks:
+      - appnet
+
 volumes:
-  formcollector_pgdata:    
+  formcollector_pgdata:
 
 networks:
   appnet:
