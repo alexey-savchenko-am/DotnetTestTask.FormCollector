@@ -28,6 +28,17 @@ services:
             - formcollector.db
         networks:
             - appnet
+    formcollector.web:
+        container_name: formcollector.web
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports:
+            - "3000:80"
+        depends_on:
+            - formcollector.api
+        networks:
+            - appnet
 volumes:
   formcollector_pgdata:    
 

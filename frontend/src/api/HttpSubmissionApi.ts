@@ -3,13 +3,14 @@ import { Submission } from '@/types/Submission';
 import { SubmissionSearchResult } from '@/types/SubmissionSearchResult';
 import { SubmissionFilter } from '@/types/SubmissionFilter';
 import { SubmissionApi } from './SubmissionApi';
-
+import { SUBMISSION_API_BASE } from '@/config';
+    
 export class HttpSubmissionApi implements SubmissionApi {
-
+ 
     async  createSubmission(formId: string, formName: string, payload: object): Promise<Submission> {
         try {
             const response = await axios.post<Submission>(
-                'http://localhost:8080/api/submissions',
+                `${SUBMISSION_API_BASE}/submissions`,
                 {
                     formId,
                     formName,
@@ -29,7 +30,7 @@ export class HttpSubmissionApi implements SubmissionApi {
     async getSubmissions(filter: SubmissionFilter): Promise<SubmissionSearchResult> {
         try {
             const response = await axios.get<SubmissionSearchResult>(
-                'http://localhost:8080/api/submissions',
+                `${SUBMISSION_API_BASE}/submissions`,
                 {
                     params: filter
                 }

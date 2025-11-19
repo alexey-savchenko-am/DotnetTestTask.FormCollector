@@ -13,7 +13,7 @@ const loading = ref(false);
 
 const filter = reactive<SubmissionFilter>({
     page: 1,
-    itemsPerPage: 10,
+    itemsPerPage: 5,
     query: null
 });
 
@@ -49,37 +49,51 @@ function formatJson(json: string): string{
     return JSON.stringify(JSON.parse(json), null, 2);
 }
 
+
 onMounted(load);
 </script>
 
-
 <template>
-    <div class="gap-2 overflow-x-hidden p-4 space-y-4">
-       <h1 class="text-3xl font-bold text-gray-600 text-center">Submissions</h1>
-
-       <FormInput label="" v-model="filter.query" placeholder="Search submissions..." />
+    <div class="p-6 space-y-6 max-w-3xl mx-auto">
+      <h1 class="text-4xl font-extrabold text-gray-700 text-center">Submissions</h1>
   
-       <Pager 
-            v-model="filter.page" 
-            :total-pages="totalPages" 
-            @update:model-value="load"
-        />
-
-        <div v-if="loading" class="flex justify-center py-10 ">
-            <div class="animate-spin rounded-full h-10 w-10 border-4 border-gray-300 border-t-blue-500"></div>
+      <FormInput 
+        label="" 
+        v-model="filter.query" 
+        placeholder="Search submissions..." 
+        class="w-full"
+      />
+  
+      <Pager 
+        v-model="filter.page" 
+        :total-pages="totalPages" 
+        @update:model-value="load"
+        class="w-full"
+      />
+  
+      <div v-if="loading" class="flex justify-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-500"></div>
+      </div>
+  
+      <div v-else class="flex flex-col gap-6">
+        <div 
+          v-for="s in submissions" 
+          :key="s.id"
+          class="bg-white rounded-xl shadow hover:shadow-lg transition p-5 flex flex-col"
+        >
+          <div class="mb-3">
+            <h4 class="text-gray-500 text-sm mb-1">Submitted on</h4>
+            <p class="text-gray-700 font-medium">{{ s.createdOnUtc }}</p>
+          </div>
+  
+          <pre class="bg-gray-50 p-3 rounded text-xs overflow-x-auto font-mono mb-3">{{ formatJson(s.payload) }}</pre>
+  
+          <div class="mt-auto">
+            <h4 class="text-blue-600 font-semibold text-sm truncate">{{ s.formName }}</h4>
+            <p class="text-gray-400 text-xs">{{ s.formId }}</p>
+          </div>
         </div>
-
-        <div v-else class="flex flex-col gap-8 justify-center">
-            <div v-for="s in submissions" :key="s.id" 
-                class="rounded-sm border-gray-300 shadow-sm p-4 hover:shadow-md transition w-full"
-            >
-                <h4 class="text-sm font-bold text-gray-600 mb-2">
-                   Submitted on {{ s.createdOnUtc.toLocaleString() }}
-                </h4>
-                <pre class="text-xs bg-gray-50 p-2 rounded overflow-x-auto font-mono">{{ formatJson(s.payload) }}</pre>
-                <br>
-                <h4 class="lowercase font-bold text-gray-500 text-sm mb-2">{{ s.formId }} | {{ s.formName }}</h4>
-            </div>
-        </div>
+      </div>
     </div>
 </template>
+  
