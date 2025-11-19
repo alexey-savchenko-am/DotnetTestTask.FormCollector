@@ -130,17 +130,11 @@ internal class SubmissionService
             var terms = searchDto.Query?
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-            if (searchDto.FormId is not null)
-            {
-                formId = new FormId(searchDto.FormId);
-            }
-
             var submissions = await _submissionRepository
                 .FindPaginatedAsync(
                     searchDto.Page,
                     searchDto.ItemsPerPage,
                     terms?.ToList() ?? [],
-                    formId,
                     ct)
                 .ConfigureAwait(false);
 

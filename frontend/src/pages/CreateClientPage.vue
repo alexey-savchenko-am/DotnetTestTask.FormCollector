@@ -4,7 +4,7 @@ import CreateClientForm from '@/components/CreateClientForm.vue';
 
 <template>
     <div class="flex flex-col items-center py-4">
-      <h1 class="text-3xl text-gray-600">Create New Client</h1>
+      <h1 class="text-3xl font-bold text-gray-600">Create New Client</h1>
       <CreateClientForm />
     </div>
 </template>

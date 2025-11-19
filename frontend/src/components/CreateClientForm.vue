@@ -11,7 +11,10 @@ interface ClientForm {
     gender: 'male' | 'female' | 'other'
     email: string
     phone: string
-    address: string
+    address: string,
+    contactMethod: 'Email' | 'Phone' | 'SMS',
+    subscribeOnUpdates: boolean,
+    agreeTerms: boolean
 }
 
 const form = reactive<ClientForm>({
@@ -22,6 +25,9 @@ const form = reactive<ClientForm>({
     email: '',
     phone: '',
     address: '',
+    contactMethod: 'Email',
+    subscribeOnUpdates: false,
+    agreeTerms: false
 })
 
 const errors = reactive<Record<string, string>>({})
@@ -58,13 +64,16 @@ async function submitForm() {
 }
 
 function resetForm() {
-  form.firstName = ''
-  form.lastName = ''
-  form.birthDate = ''
-  form.gender = 'male' 
-  form.email = ''
-  form.phone = ''
-  form.address = ''
+  form.firstName = '';
+  form.lastName = '';
+  form.birthDate = '';
+  form.gender = 'male';
+  form.email = '';
+  form.phone = '';
+  form.address = '';
+  form.contactMethod = 'Email';
+  form.subscribeOnUpdates = false;
+  form.agreeTerms = false;
 }
 </script>
 
@@ -93,6 +102,25 @@ function resetForm() {
         <FormInput label="Email" v-model="form.email" :error="errors.email" type="email" />
 
         <FormInput label="Phone Number" v-model="form.phone" :error="errors.phone" />
+        
+        <label class="text-sm md:text-base font-medium text-gray-700 mb-1 flex flex-col gap-2">
+            Preffered contact method:
+            <select v-model="form.contactMethod" class=" border border-gray-300 rounded-lg px-3 py-2 outline-0">
+                <option value="Email">Email</option>
+                <option value="Phone">Phone</option>
+                <option value="SMS">SMS</option>
+            </select>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+            <input class="w-4 h-4" type="checkbox" v-model="form.subscribeOnUpdates"/>
+            Subscribe on updates
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer text-gray-700">
+            <input class="w-4 h-4" type="checkbox" v-model="form.agreeTerms"/>
+            Agree with terms
+        </label>
 
         <button
             type="submit"

@@ -1,8 +1,8 @@
 
 export interface Submission {
-    Id: string,
-    FormId: string,
-    FormName: string,
-    Payload: string
-    CreatedOnUtc: string
+    id: string,
+    formId: string,
+    formName: string,
+    payload: string
+    createdOnUtc: Date
 }

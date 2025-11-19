@@ -1,6 +1,6 @@
 import { Submission } from '@/types/Submission';
 
 export interface SubmissionSearchResult {
-    Submissions: Submission[],
-    TotalCount: number
+    submissions: Submission[],
+    totalCount: number
 }

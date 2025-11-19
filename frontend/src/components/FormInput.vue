@@ -2,10 +2,11 @@
 import { defineProps } from 'vue';
 
 const props = defineProps<{
-    label: string
-    modelValue: string
+    label: string,
+    modelValue: string | null
     type?: string
     error?: string
+    placeholder?: string 
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -27,11 +28,11 @@ function onInput(e: Event) {
         </span>
     </div>
 
-
     <input
         :type="type ?? 'text'"
         :value="modelValue"
         @input="onInput"
+        :placeholder="placeholder"
         class="
             border border-gray-300 rounded-lg px-3 py-2
             outline-0

@@ -4,21 +4,22 @@ import { SubmissionSearchResult } from '@/types/SubmissionSearchResult';
 import { SubmissionFilter } from '@/types/SubmissionFilter';
 import { SubmissionApi } from './SubmissionApi';
 
-const submissions: Submission[] = [];
-
 export class MockSubmissionApi implements SubmissionApi {
+
+    _submissions: Submission[] = [];
+
     async createSubmission(formId: string, formName:string, payload: object): Promise<Submission> {
         await new Promise(resolve => setTimeout(resolve, 200));
 
         const submission: Submission = {
-            Id: uuidv4(),
-            FormId: formId,
-            FormName: formName,
-            Payload: JSON.stringify(payload),
-            CreatedOnUtc: new Date()
+            id: uuidv4(),
+            formId: formId,
+            formName: formName,
+            payload: JSON.stringify(payload),
+            createdOnUtc: new Date()
         }
 
-        submissions.push(submission);
+        this._submissions.push(submission);
 
         return submission;
     }
@@ -26,39 +27,37 @@ export class MockSubmissionApi implements SubmissionApi {
     async getSubmissions(filter: SubmissionFilter): Promise<SubmissionSearchResult> {
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        let result: Submission[] = [...submissions];
+        let result: Submission[] = [...this._submissions];
 
-        if(filter.FormId) {
-            result = result.filter(s => s.FormId === filter.FormId);
-        }
+        console.log("submissions: ", result);
 
-        if(filter.Query) {
-            const keywords = filter.Query
+        if(filter.query) {
+            const keywords = filter.query
                 .split(' ')
                 .map(k => k.trim().toLowerCase())
                 .filter(k => k.length > 0);
 
             result = result.filter(s => {
-                const payload = JSON.stringify(s.Payload).toLowerCase();
-                return keywords.every(k => payload.includes(k));
+                const payload = JSON.stringify(s.payload).toLowerCase();
+                return keywords.every(k => payload.includes(k) || s.formId.includes(k));
             });
         }
         
         result = result.sort((a, b) => {
-            return b.CreatedOnUtc.getTime() - a.CreatedOnUtc.getTime();
+            return b.createdOnUtc.getTime() - a.createdOnUtc.getTime();
         });
 
         // skip + take
         const totalCount = result.length;
 
-        const start = (filter.Page - 1) * filter.ItemsPerPage;
-        const end = start + filter.ItemsPerPage;
+        const start = (filter.page - 1) * filter.itemsPerPage;
+        const end = start + filter.itemsPerPage;
 
         const paged = result.slice(start, end);
 
         return {
-            Submissions: paged,
-            TotalCount: totalCount
+            submissions: paged,
+            totalCount: totalCount
         }
     }
 }

@@ -6,14 +6,20 @@ using MinimalApi.Endpoint.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-
-Console.WriteLine("Helllllllllllllllllllllooooo");
-var configuration = builder.Configuration;
-Console.WriteLine(configuration.GetConnectionString("FormCollectorDb"));
-
 services
     .AddApplication()
     .AddInfrastructure();
+
+services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 services.AddEndpoints();
 services.AddEndpointsApiExplorer();
@@ -32,6 +38,8 @@ if (app.Environment.IsDevelopment())
     var databaseInitializer = scope.ServiceProvider.GetService<IDatabaseInitializer>();
     databaseInitializer?.InitializeAsync(recreateDatabase: true).Wait();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

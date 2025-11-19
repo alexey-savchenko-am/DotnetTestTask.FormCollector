@@ -12,11 +12,10 @@ public class SearchSubmissions(ISubmissionReader submissionReader)
     public void AddRoute(IEndpointRouteBuilder app)
     {
         app.MapGet("/api/submissions",
-                ([FromQuery] string? formId,
-                 [FromQuery] string? query,
+                ([FromQuery] string? query,
                  [FromQuery] int page,
                  [FromQuery] int itemsPerPage) => 
-                    HandleAsync(new SubmissionSearchDto(formId, query, page, itemsPerPage)))
+                    HandleAsync(new SubmissionSearchDto(query, page, itemsPerPage)))
             .Produces<Submission>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .WithName("SearchSubmissions")

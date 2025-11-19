@@ -19,7 +19,6 @@ internal sealed class SubmissionRepository(DbContext dbContext)
         int page,
         int pageSize,
         List<string> terms,
-        FormId? formId,
         CancellationToken ct = default)
     {
         if (page <= 0) page = 1;
@@ -27,16 +26,13 @@ internal sealed class SubmissionRepository(DbContext dbContext)
 
         var query = dbContext.Set<Submission>().AsQueryable();
 
-        if (formId is not null)
-        {
-            query = query.Where(s => s.FormData.Id == formId);
-        }
-
         foreach (var term in terms)
         {
             var pattern = $"%{term}%";
+
             query = query.Where(s =>
-                EF.Functions.Like(s.Payload.Flattened, pattern)
+                EF.Functions.Like(s.Payload.Flattened, pattern) 
+                || EF.Functions.Like(s.FormData.Id, new FormId(pattern))
             );
         }
 

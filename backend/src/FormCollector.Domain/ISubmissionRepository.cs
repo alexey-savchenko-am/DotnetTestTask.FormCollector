@@ -13,6 +13,5 @@ public interface ISubmissionRepository
         int page,
         int pageSize,
         List<string> terms,
-        FormId? formId,
         CancellationToken ct = default);
 }
